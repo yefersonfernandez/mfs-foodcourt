@@ -1,0 +1,22 @@
+server:
+  port: 9091
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/food_courts
+    username: postgres
+    password: 1234
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+      format_sql: true
+    show-sql: true
+
+clients:
+  users:
+    name: users
+    base-url: http://localhost:9090/api/v1/users
+
+appDescription: "Pragma Plazoleta"
+appVersion: "1.0.0"

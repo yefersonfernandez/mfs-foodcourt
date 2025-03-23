@@ -32,6 +32,11 @@ public class RestaurantUseCase implements IRestaurantServicePort {
         restaurantPersistencePort.saveRestaurant(restaurantModel);
     }
 
+    @Override
+    public RestaurantModel getRestaurantById(Long restaurantId) {
+        return restaurantPersistencePort.getRestaurantById(restaurantId);
+    }
+
     private void validateRestaurant(RestaurantModel restaurantModel) {
         validateRequiredFields(restaurantModel);
         validateFormats(restaurantModel);
@@ -91,7 +96,7 @@ public class RestaurantUseCase implements IRestaurantServicePort {
         UserModel userModel = Optional.ofNullable(userFeignClientPort.getUserById(userId))
                 .orElseThrow(() -> new UserNotFoundException(ErrorMessages.USER_NOT_FOUND));
 
-        if (!"ROLE_ADMIN".equalsIgnoreCase(userModel.getRoleModel().getName())) {
+        if (!ValidationConstants.ROLE_ADMIN.equalsIgnoreCase(userModel.getRoleModel().getName())) {
             throw new InvalidUserRoleException(ErrorMessages.INVALID_USER_ROLE);
         }
     }

@@ -6,4 +6,5 @@ public interface IRestaurantPersistencePort {
 
     void saveRestaurant(RestaurantModel model);
 
+    RestaurantModel getRestaurantById(Long restaurantId);
 }

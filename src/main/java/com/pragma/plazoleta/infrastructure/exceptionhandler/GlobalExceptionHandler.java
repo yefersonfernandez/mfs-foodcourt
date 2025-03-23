@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-public class RestaurantExceptionHandler {
+public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidRestaurantNameException.class)
     public ResponseEntity<String> handleInvalidRestaurantNameException(InvalidRestaurantNameException ex) {
@@ -37,5 +37,20 @@ public class RestaurantExceptionHandler {
     @ExceptionHandler(InvalidUserRoleException.class)
     public ResponseEntity<String> handleInvalidUserRoleException(InvalidUserRoleException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<String> handleCategoryNotFoundException(CategoryNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidPriceException.class)
+    public ResponseEntity<String> handleInvalidPriceException(InvalidPriceException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(RestaurantNotFoundException.class)
+    public ResponseEntity<String> handleRestaurantNotFoundException(RestaurantNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 }

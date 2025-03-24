@@ -1,7 +1,5 @@
 package com.pragma.plazoleta.infrastructure.out.jpa.entity;
 
-import com.pragma.plazoleta.domain.model.CategoryModel;
-import com.pragma.plazoleta.domain.model.RestaurantModel;
 import jakarta.persistence.*;
 import lombok.*;
 

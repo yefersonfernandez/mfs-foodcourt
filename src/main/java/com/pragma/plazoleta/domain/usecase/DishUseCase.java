@@ -1,10 +1,7 @@
 package com.pragma.plazoleta.domain.usecase;
 
 import com.pragma.plazoleta.domain.api.IDishServicePort;
-import com.pragma.plazoleta.domain.exception.CategoryNotFoundException;
-import com.pragma.plazoleta.domain.exception.InvalidPriceException;
-import com.pragma.plazoleta.domain.exception.MissingRequiredFieldsException;
-import com.pragma.plazoleta.domain.exception.RestaurantNotFoundException;
+import com.pragma.plazoleta.domain.exception.*;
 import com.pragma.plazoleta.domain.model.DishModel;
 import com.pragma.plazoleta.domain.spi.ICategoryPersistencePort;
 import com.pragma.plazoleta.domain.spi.IDishPersistencePort;
@@ -34,8 +31,22 @@ public class DishUseCase implements IDishServicePort {
     }
 
     @Override
-    public DishModel getDishById(Long id) {
-        return dishPersistencePort.getDishById(id);
+    public DishModel getDishById(Long dishId) {
+        return dishPersistencePort.getDishById(dishId);
+    }
+
+    @Override
+    public void updateDish(Long dishId, DishModel dishModel) {
+        DishModel updateDish = dishPersistencePort.getDishById(dishId);
+
+        if (updateDish == null)
+            throw new DishNotFoundException(ErrorMessages.DISH_NOT_FOUND);
+
+        validateDishUpdate(dishModel);
+        Optional.ofNullable(dishModel.getPrice()).ifPresent(updateDish::setPrice);
+        Optional.ofNullable(dishModel.getDescription()).ifPresent(updateDish::setDescription);
+
+        dishPersistencePort.saveDish(updateDish);
     }
 
     private void validateDish(DishModel dishModel) {
@@ -43,6 +54,10 @@ public class DishUseCase implements IDishServicePort {
         validateFormats(dishModel);
         validateRestaurant(dishModel.getCategoryModel().getId());
         validateCategory(dishModel.getCategoryModel().getId());
+    }
+
+    private void validateDishUpdate(DishModel dishModel) {
+        Optional.ofNullable(dishModel.getPrice()).ifPresent(this::validatePositivePrice);
     }
 
     private void validateRequiredFields(DishModel dishModel) {

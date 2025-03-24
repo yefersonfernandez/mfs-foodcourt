@@ -31,4 +31,10 @@ public class DishHandlerImpl implements IDishHandler {
         DishModel dishModel = dishServicePort.getDishById(dishId);
         return dishResponseMapper.toDishResponseDto(dishModel);
     }
+
+    @Override
+    public void updateDish(Long dishId, DishRequestDto dishRequestDto) {
+        DishModel dishModel = dishRequestMapper.toDishModel(dishRequestDto);
+        dishServicePort.updateDish(dishId, dishModel);
+    }
 }

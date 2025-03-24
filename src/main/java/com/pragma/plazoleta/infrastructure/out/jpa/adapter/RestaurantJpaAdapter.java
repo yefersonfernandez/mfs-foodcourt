@@ -7,7 +7,6 @@ import com.pragma.plazoleta.infrastructure.out.jpa.mapper.IRestaurantEntityMappe
 import com.pragma.plazoleta.infrastructure.out.jpa.repository.IRestaurantRepository;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Optional;
 
 @RequiredArgsConstructor
 public class RestaurantJpaAdapter implements IRestaurantPersistencePort {

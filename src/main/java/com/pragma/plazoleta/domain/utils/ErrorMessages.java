@@ -26,6 +26,7 @@ public class ErrorMessages {
 
     public static final String RESTAURANT_NOT_FOUND = "The restaurant does not exist.";
     public static final String CATEGORY_NOT_FOUND = "The category does not exist.";
+    public static final String DISH_NOT_FOUND = "The dish does not exist.";
 
     private ErrorMessages() {
         throw new UnsupportedOperationException("Utility class");

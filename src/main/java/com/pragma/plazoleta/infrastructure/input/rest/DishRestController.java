@@ -51,4 +51,22 @@ public class DishRestController {
         DishResponseDto response = dishHandler.getDishById(dishId);
         return ResponseEntity.ok(response);
     }
+
+    @Operation(summary = ApiDescriptions.UPDATE_DISH_SUMMARY,
+            description = ApiDescriptions.UPDATE_DISH_DESCRIPTION)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = ApiDescriptions.UPDATE_DISH_SUCCESS),
+            @ApiResponse(responseCode = "400", description = ApiDescriptions.UPDATE_DISH_BAD_REQUEST),
+            @ApiResponse(responseCode = "404", description = ApiDescriptions.UPDATE_DISH_NOT_FOUND)
+    })
+    @PatchMapping(ApiPaths.UPDATE_DISH)
+    public ResponseEntity<Void> updateDish(
+            @Parameter(description = ApiDescriptions.UPDATE_DISH_PARAM, required = true)
+            @PathVariable(name = "id") Long dishId,
+            @RequestBody DishRequestDto dishRequestDto
+    ) {
+        dishHandler.updateDish(dishId, dishRequestDto);
+        return ResponseEntity.noContent().build();
+    }
+
 }

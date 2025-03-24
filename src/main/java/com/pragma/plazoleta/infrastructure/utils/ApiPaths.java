@@ -15,6 +15,8 @@ public class ApiPaths {
     public static final String CREATE_CATEGORY = "/";
     public static final String GET_CATEGORY_BY_ID = "/{id}";
 
+    public static final String UPDATE_DISH = "/{id}";
+
     private ApiPaths() {
         throw new UnsupportedOperationException("Utility class");
     }

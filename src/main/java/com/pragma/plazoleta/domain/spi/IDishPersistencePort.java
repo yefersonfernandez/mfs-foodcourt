@@ -6,6 +6,6 @@ public interface IDishPersistencePort {
 
     void saveDish(DishModel dishModel);
 
-    DishModel getDishById(Long id);
+    DishModel getDishById(Long dishId);
 
 }

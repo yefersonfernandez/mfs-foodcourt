@@ -43,6 +43,13 @@ public class ApiDescriptions {
     public static final String GET_CATEGORY_BY_ID_SUCCESS = "Category retrieved successfully";
     public static final String GET_CATEGORY_BY_ID_NOT_FOUND = "Category not found";
 
+    public static final String UPDATE_DISH_SUMMARY = "Update an existing dish";
+    public static final String UPDATE_DISH_DESCRIPTION = "Modify the details of an existing dish by providing its ID and the updated information.";
+    public static final String UPDATE_DISH_PARAM = "ID of the dish to update";
+    public static final String UPDATE_DISH_SUCCESS = "Dish successfully updated";
+    public static final String UPDATE_DISH_BAD_REQUEST = "Invalid dish data";
+    public static final String UPDATE_DISH_NOT_FOUND = "Dish not found";
+
     private ApiDescriptions() {
         throw new UnsupportedOperationException("Utility class");
     }

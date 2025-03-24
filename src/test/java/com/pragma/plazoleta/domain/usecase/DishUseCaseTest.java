@@ -11,6 +11,7 @@ import com.pragma.plazoleta.domain.utils.ErrorMessages;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.function.Executable;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -31,6 +32,9 @@ class DishUseCaseTest {
 
     private static final int INVALID_PRICE = -500;
     private static final String EMPTY_STRING = "";
+
+    private static final int UPDATED_PRICE = 20000;
+    private static final String UPDATED_DESCRIPTION = "Updated description";
 
     @Mock
     private IDishPersistencePort dishPersistencePort;
@@ -160,4 +164,56 @@ class DishUseCaseTest {
         assertNull(foundDish);
         verify(dishPersistencePort, times(1)).getDishById(DEFAULT_DISH_ID);
     }
+
+    @Test
+    void updateDish_SuccessfullyUpdatesDish(){
+        when(dishPersistencePort.getDishById(DEFAULT_DISH_ID)).thenReturn(dishModel);
+        doNothing().when(dishPersistencePort).saveDish(any(DishModel.class));
+
+        DishModel updatedDish = new DishModel();
+        updatedDish.setPrice(UPDATED_PRICE);
+        updatedDish.setDescription(UPDATED_DESCRIPTION);
+
+        assertDoesNotThrow(() -> dishUseCase.updateDish(DEFAULT_DISH_ID, updatedDish));
+
+        verify(dishPersistencePort, times(1)).getDishById(DEFAULT_DISH_ID);
+        verify(dishPersistencePort, times(1)).saveDish(any(DishModel.class));
+
+        assertEquals(UPDATED_PRICE, dishModel.getPrice());
+        assertEquals(UPDATED_DESCRIPTION, dishModel.getDescription());
+
+        assertEquals(DEFAULT_DISH_NAME, dishModel.getName());
+        assertEquals(DEFAULT_IMAGE_URL, dishModel.getImageUrl());
+        assertEquals(restaurantModel, dishModel.getRestaurantModel());
+        assertEquals(categoryModel, dishModel.getCategoryModel());
+    }
+
+    @Test
+    void updateDish_DishNotFound_ThrowsException(){
+        when(dishPersistencePort.getDishById(DEFAULT_DISH_ID)).thenReturn(null);
+
+        DishModel updatedDish = new DishModel();
+        updatedDish.setPrice(UPDATED_PRICE);
+        updatedDish.setDescription(UPDATED_DESCRIPTION);
+
+        Executable action = () -> dishUseCase.updateDish(DEFAULT_DISH_ID, updatedDish);
+        DishNotFoundException exception = assertThrows(DishNotFoundException.class, action);
+        assertEquals(ErrorMessages.DISH_NOT_FOUND, exception.getMessage());
+    }
+
+    @Test
+    void updateDish_NegativePrice_ThrowsException() {
+        when(dishPersistencePort.getDishById(DEFAULT_DISH_ID)).thenReturn(dishModel);
+
+        DishModel updatedDish = new DishModel();
+        updatedDish.setPrice(INVALID_PRICE);
+        updatedDish.setDescription(UPDATED_DESCRIPTION);
+
+        Executable action = () -> dishUseCase.updateDish(DEFAULT_DISH_ID, updatedDish);
+        InvalidPriceException exception = assertThrows(InvalidPriceException.class, action);
+
+        assertEquals(ErrorMessages.DISH_PRICE_MUST_BE_POSITIVE, exception.getMessage());
+        verify(dishPersistencePort, never()).saveDish(any());
+    }
+
 }

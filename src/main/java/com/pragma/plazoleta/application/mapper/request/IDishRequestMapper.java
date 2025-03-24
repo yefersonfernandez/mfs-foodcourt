@@ -4,7 +4,6 @@ import com.pragma.plazoleta.application.dto.request.DishRequestDto;
 import com.pragma.plazoleta.domain.model.DishModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(componentModel = "spring",

@@ -16,6 +16,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -72,8 +74,8 @@ class DishUseCaseTest {
 
     @Test
     void saveDish_SuccessfullyCreatesDish() {
-        when(restaurantPersistencePort.getRestaurantById(anyLong())).thenReturn(restaurantModel);
-        when(categoryPersistencePort.getCategoryById(anyLong())).thenReturn(categoryModel);
+        when(restaurantPersistencePort.getRestaurantById(anyLong())).thenReturn(Optional.of(restaurantModel));
+        when(categoryPersistencePort.getCategoryById(anyLong())).thenReturn(Optional.of(categoryModel));
         doNothing().when(dishPersistencePort).saveDish(any(DishModel.class));
 
         assertDoesNotThrow(() -> dishUseCase.saveDish(dishModel));
@@ -130,14 +132,14 @@ class DishUseCaseTest {
 
     @Test
     void saveDish_RestaurantNotFound_ThrowsException() {
-        when(restaurantPersistencePort.getRestaurantById(anyLong())).thenReturn(null);
+        when(restaurantPersistencePort.getRestaurantById(anyLong())).thenReturn(Optional.empty());
         RestaurantNotFoundException exception = assertThrows(RestaurantNotFoundException.class, () -> dishUseCase.saveDish(dishModel));
         assertEquals(ErrorMessages.RESTAURANT_NOT_FOUND, exception.getMessage());
     }
 
     @Test
     void saveDish_CategoryNotFound_ThrowsException() {
-        when(restaurantPersistencePort.getRestaurantById(anyLong())).thenReturn(restaurantModel);
+        when(restaurantPersistencePort.getRestaurantById(anyLong())).thenReturn(Optional.of(restaurantModel));
         when(categoryPersistencePort.getCategoryById(anyLong())).thenReturn(null);
         CategoryNotFoundException exception = assertThrows(CategoryNotFoundException.class, () -> dishUseCase.saveDish(dishModel));
         assertEquals(ErrorMessages.CATEGORY_NOT_FOUND, exception.getMessage());
@@ -145,7 +147,7 @@ class DishUseCaseTest {
 
     @Test
     void getDishById_ExistingDish_ReturnsDish() {
-        when(dishPersistencePort.getDishById(DEFAULT_DISH_ID)).thenReturn(dishModel);
+        when(dishPersistencePort.getDishById(DEFAULT_DISH_ID)).thenReturn(Optional.of(dishModel));
 
         DishModel foundDish = dishUseCase.getDishById(DEFAULT_DISH_ID);
 
@@ -167,7 +169,7 @@ class DishUseCaseTest {
 
     @Test
     void updateDish_SuccessfullyUpdatesDish(){
-        when(dishPersistencePort.getDishById(DEFAULT_DISH_ID)).thenReturn(dishModel);
+        when(dishPersistencePort.getDishById(DEFAULT_DISH_ID)).thenReturn(Optional.of(dishModel));
         doNothing().when(dishPersistencePort).saveDish(any(DishModel.class));
 
         DishModel updatedDish = new DishModel();
@@ -203,7 +205,7 @@ class DishUseCaseTest {
 
     @Test
     void updateDish_NegativePrice_ThrowsException() {
-        when(dishPersistencePort.getDishById(DEFAULT_DISH_ID)).thenReturn(dishModel);
+        when(dishPersistencePort.getDishById(DEFAULT_DISH_ID)).thenReturn(Optional.of(dishModel));
 
         DishModel updatedDish = new DishModel();
         updatedDish.setPrice(INVALID_PRICE);

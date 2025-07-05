@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -30,6 +31,7 @@ public class RestaurantRestController {
             @ApiResponse(responseCode = "409", description = ApiDescriptions.CREATE_RESTAURANT_CONFLICT)
     })
     @PostMapping(ApiPaths.CREATE_RESTAURANT)
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Void> createRestaurant(
             @Parameter(description = ApiDescriptions.CREATE_RESTAURANT_PARAM, required = true)
             @RequestBody RestaurantRequestDto restaurantRequestDto
@@ -45,6 +47,7 @@ public class RestaurantRestController {
             @ApiResponse(responseCode = "404", description = ApiDescriptions.GET_RESTAURANT_BY_ID_NOT_FOUND)
     })
     @GetMapping(ApiPaths.GET_RESTAURANT_BY_ID)
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<RestaurantResponseDto> getRestaurantById(
             @Parameter(description = ApiDescriptions.GET_RESTAURANT_BY_ID_PARAM, required = true)
             @PathVariable(name = "id") Long restaurantId

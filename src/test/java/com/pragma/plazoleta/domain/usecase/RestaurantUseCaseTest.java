@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -87,7 +88,7 @@ class RestaurantUseCaseTest {
 
     @Test
     void saveRestaurant_SuccessfullyCreatesRestaurant() {
-        when(userFeignClientPort.getUserById(anyLong())).thenReturn(userModel);
+        when(userFeignClientPort.getUserById(anyLong())).thenReturn(Optional.of(userModel));
         doNothing().when(restaurantPersistencePort).saveRestaurant(any(RestaurantModel.class));
 
         assertDoesNotThrow(() -> restaurantUseCase.saveRestaurant(restaurantModel));
@@ -159,22 +160,22 @@ class RestaurantUseCaseTest {
 
     @Test
     void saveRestaurant_UserNotFound_ThrowsException() {
-        when(userFeignClientPort.getUserById(anyLong())).thenReturn(null);
+        when(userFeignClientPort.getUserById(2L)).thenReturn(Optional.empty());
         UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> restaurantUseCase.saveRestaurant(restaurantModel));
-        assertEquals(ErrorMessages.USER_NOT_FOUND, exception.getMessage());
+        assertEquals(ErrorMessages.userNotFound(1L), exception.getMessage());
     }
 
     @Test
     void saveRestaurant_InvalidUserRole_ThrowsException() {
         userModel.setRoleModel(new RoleModel(ROLE_OWNER_ID, ROLE_OWNER_NAME, ROLE_OWNER_DESCRIPTION));
-        when(userFeignClientPort.getUserById(anyLong())).thenReturn(userModel);
+        when(userFeignClientPort.getUserById(anyLong())).thenReturn(Optional.of(userModel));
         InvalidUserRoleException exception = assertThrows(InvalidUserRoleException.class, () -> restaurantUseCase.saveRestaurant(restaurantModel));
         assertEquals(ErrorMessages.INVALID_USER_ROLE, exception.getMessage());
     }
 
     @Test
     void getRestaurantById_ExistingDish_ReturnsRestaurant() {
-        when(restaurantPersistencePort.getRestaurantById(DEFAULT_RESTAURANT_ID)).thenReturn(restaurantModel);
+        when(restaurantPersistencePort.getRestaurantById(DEFAULT_RESTAURANT_ID)).thenReturn(Optional.of(restaurantModel));
 
         RestaurantModel foundRestaurant = restaurantUseCase.getRestaurantById(DEFAULT_RESTAURANT_ID);
 
@@ -186,7 +187,7 @@ class RestaurantUseCaseTest {
 
     @Test
     void getDishById_NonExistingDish_ReturnsNull() {
-        when(restaurantPersistencePort.getRestaurantById(DEFAULT_RESTAURANT_ID)).thenReturn(null);
+        when(restaurantPersistencePort.getRestaurantById(DEFAULT_RESTAURANT_ID)).thenReturn(Optional.empty());
 
         RestaurantModel foundRestaurant = restaurantUseCase.getRestaurantById(DEFAULT_RESTAURANT_ID);
 

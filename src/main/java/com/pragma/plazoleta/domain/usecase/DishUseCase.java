@@ -3,23 +3,29 @@ package com.pragma.plazoleta.domain.usecase;
 import com.pragma.plazoleta.domain.api.IDishServicePort;
 import com.pragma.plazoleta.domain.exception.*;
 import com.pragma.plazoleta.domain.model.DishModel;
+import com.pragma.plazoleta.domain.model.RestaurantModel;
 import com.pragma.plazoleta.domain.spi.ICategoryPersistencePort;
 import com.pragma.plazoleta.domain.spi.IDishPersistencePort;
 import com.pragma.plazoleta.domain.spi.IRestaurantPersistencePort;
+import com.pragma.plazoleta.domain.spi.ITokenPort;
 import com.pragma.plazoleta.domain.utils.ErrorMessages;
 
 import java.util.Optional;
+
+import static com.pragma.plazoleta.domain.utils.ErrorMessages.USER_NOT_OWNER_OF_RESTAURANT;
 
 public class DishUseCase implements IDishServicePort {
 
     private final IDishPersistencePort dishPersistencePort;
     private final IRestaurantPersistencePort restaurantPersistencePort;
     private final ICategoryPersistencePort categoryPersistencePort;
+    private final ITokenPort tokenPort;
 
-    public DishUseCase(IDishPersistencePort dishPersistencePort, IRestaurantPersistencePort restaurantPersistencePort, ICategoryPersistencePort categoryPersistencePort) {
+    public DishUseCase(IDishPersistencePort dishPersistencePort, IRestaurantPersistencePort restaurantPersistencePort, ICategoryPersistencePort categoryPersistencePort, ITokenPort tokenPort) {
         this.dishPersistencePort = dishPersistencePort;
         this.restaurantPersistencePort = restaurantPersistencePort;
         this.categoryPersistencePort = categoryPersistencePort;
+        this.tokenPort = tokenPort;
     }
 
     @Override
@@ -32,15 +38,16 @@ public class DishUseCase implements IDishServicePort {
 
     @Override
     public DishModel getDishById(Long dishId) {
-        return dishPersistencePort.getDishById(dishId);
+        return dishPersistencePort.getDishById(dishId)
+                .orElseThrow(() -> new DishNotFoundException(ErrorMessages.dishNotFound(dishId)));
     }
 
     @Override
     public void updateDish(Long dishId, DishModel dishModel) {
-        DishModel updateDish = dishPersistencePort.getDishById(dishId);
+        DishModel updateDish = dishPersistencePort.getDishById(dishId)
+                .orElseThrow(() -> new DishNotFoundException(ErrorMessages.dishNotFound(dishId)));
 
-        if (updateDish == null)
-            throw new DishNotFoundException(ErrorMessages.DISH_NOT_FOUND);
+        validateDishOwnership(updateDish.getRestaurantModel().getId());
 
         validateDishUpdate(dishModel);
         Optional.ofNullable(dishModel.getPrice()).ifPresent(updateDish::setPrice);
@@ -54,6 +61,7 @@ public class DishUseCase implements IDishServicePort {
         validateFormats(dishModel);
         validateRestaurant(dishModel.getCategoryModel().getId());
         validateCategory(dishModel.getCategoryModel().getId());
+        validateDishOwnership(dishModel.getRestaurantModel().getId());
     }
 
     private void validateDishUpdate(DishModel dishModel) {
@@ -96,14 +104,23 @@ public class DishUseCase implements IDishServicePort {
     }
 
     private void validateRestaurant(Long restaurantId) {
-        if (restaurantPersistencePort.getRestaurantById(restaurantId) == null) {
-            throw new RestaurantNotFoundException(ErrorMessages.RESTAURANT_NOT_FOUND);
-        }
+        restaurantPersistencePort.getRestaurantById(restaurantId)
+                .orElseThrow(() -> new RestaurantNotFoundException(ErrorMessages.restaurantNotFound(restaurantId)));
     }
 
     private void validateCategory(Long categoryId) {
-        if (categoryPersistencePort.getCategoryById(categoryId) == null) {
-            throw new CategoryNotFoundException(ErrorMessages.CATEGORY_NOT_FOUND);
+        categoryPersistencePort.getCategoryById(categoryId)
+                .orElseThrow(() -> new CategoryNotFoundException(ErrorMessages.categoryNotFound(categoryId)));
+    }
+
+    private void validateDishOwnership(Long restaurantId) {
+        Long userId = tokenPort.getAuthenticatedUserId(tokenPort.getBearerToken());
+
+        RestaurantModel restaurant = restaurantPersistencePort.getRestaurantById(restaurantId)
+                .orElseThrow(() -> new RestaurantNotFoundException(ErrorMessages.restaurantNotFound(restaurantId)));
+
+        if (!restaurant.getOwnerId().equals(userId)) {
+            throw new UserNotRestaurantOwnerException(USER_NOT_OWNER_OF_RESTAURANT);
         }
     }
 }

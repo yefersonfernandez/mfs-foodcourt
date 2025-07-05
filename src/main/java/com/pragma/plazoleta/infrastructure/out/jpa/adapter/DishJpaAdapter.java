@@ -7,6 +7,8 @@ import com.pragma.plazoleta.infrastructure.out.jpa.mapper.IDishEntityMapper;
 import com.pragma.plazoleta.infrastructure.out.jpa.repository.IDishRepository;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Optional;
+
 @RequiredArgsConstructor
 public class DishJpaAdapter implements IDishPersistencePort {
 
@@ -20,9 +22,8 @@ public class DishJpaAdapter implements IDishPersistencePort {
     }
 
     @Override
-    public DishModel getDishById(Long id) {
+    public Optional<DishModel> getDishById(Long id) {
         return dishRepository.findById(id)
-                .map(dishEntityMapper::toDishModel)
-                .orElse(null);
+                .map(dishEntityMapper::toDishModel);
     }
 }

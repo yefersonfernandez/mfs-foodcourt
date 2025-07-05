@@ -2,10 +2,12 @@ package com.pragma.plazoleta.domain.spi;
 
 import com.pragma.plazoleta.domain.model.DishModel;
 
+import java.util.Optional;
+
 public interface IDishPersistencePort {
 
     void saveDish(DishModel dishModel);
 
-    DishModel getDishById(Long dishId);
+    Optional<DishModel> getDishById(Long dishId);
 
 }

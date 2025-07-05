@@ -7,6 +7,8 @@ import com.pragma.plazoleta.infrastructure.out.jpa.mapper.IRestaurantEntityMappe
 import com.pragma.plazoleta.infrastructure.out.jpa.repository.IRestaurantRepository;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Optional;
+
 
 @RequiredArgsConstructor
 public class RestaurantJpaAdapter implements IRestaurantPersistencePort {
@@ -21,9 +23,8 @@ public class RestaurantJpaAdapter implements IRestaurantPersistencePort {
     }
 
     @Override
-    public RestaurantModel getRestaurantById(Long restaurantId) {
+    public Optional<RestaurantModel> getRestaurantById(Long restaurantId) {
         return restaurantRepository.findById(restaurantId)
-                .map(restaurantEntityMapper::toRestaurantModel)
-                .orElse(null);
+                .map(restaurantEntityMapper::toRestaurantModel);
     }
 }

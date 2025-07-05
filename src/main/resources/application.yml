@@ -19,5 +19,10 @@ clients:
     name: users
     base-url: http://localhost:9090/api/v1/users
 
+security:
+  jwt:
+    secret: "Rk9yNk5tQ0trdnhWc1N4blBQYnlzMHRFVmV6M2hHR3g"
+    expiration: 3600000
+
 appDescription: "Pragma Plazoleta"
 appVersion: "1.0.0"

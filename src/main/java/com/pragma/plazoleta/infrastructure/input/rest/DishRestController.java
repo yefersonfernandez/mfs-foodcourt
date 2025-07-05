@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(ApiPaths.BASE_DISH)
@@ -29,6 +30,7 @@ public class DishRestController {
             @ApiResponse(responseCode = "400", description = ApiDescriptions.CREATE_DISH_BAD_REQUEST)
     })
     @PostMapping(ApiPaths.CREATE_DISH)
+    @PreAuthorize("hasAuthority('ROLE_OWNER')")
     public ResponseEntity<Void> createDish(
             @Parameter(description = ApiDescriptions.CREATE_DISH_PARAM, required = true)
             @RequestBody DishRequestDto dishRequestDto
@@ -44,6 +46,7 @@ public class DishRestController {
             @ApiResponse(responseCode = "404", description = ApiDescriptions.GET_DISH_BY_ID_NOT_FOUND)
     })
     @GetMapping(ApiPaths.GET_DISH_BY_ID)
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<DishResponseDto> getDishById(
             @Parameter(description = ApiDescriptions.GET_DISH_BY_ID_PARAM, required = true)
             @PathVariable(name = "id") Long dishId
@@ -60,6 +63,7 @@ public class DishRestController {
             @ApiResponse(responseCode = "404", description = ApiDescriptions.UPDATE_DISH_NOT_FOUND)
     })
     @PatchMapping(ApiPaths.UPDATE_DISH)
+    @PreAuthorize("hasAuthority('ROLE_OWNER')")
     public ResponseEntity<Void> updateDish(
             @Parameter(description = ApiDescriptions.UPDATE_DISH_PARAM, required = true)
             @PathVariable(name = "id") Long dishId,

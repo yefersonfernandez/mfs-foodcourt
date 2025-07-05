@@ -3,7 +3,6 @@ package com.pragma.plazoleta.domain.usecase;
 import com.pragma.plazoleta.domain.api.IRestaurantServicePort;
 import com.pragma.plazoleta.domain.exception.*;
 import com.pragma.plazoleta.domain.model.RestaurantModel;
-import com.pragma.plazoleta.domain.model.UserModel;
 import com.pragma.plazoleta.domain.spi.IRestaurantPersistencePort;
 import com.pragma.plazoleta.domain.spi.IUserFeignClientPort;
 import com.pragma.plazoleta.domain.utils.ErrorMessages;
@@ -34,7 +33,8 @@ public class RestaurantUseCase implements IRestaurantServicePort {
 
     @Override
     public RestaurantModel getRestaurantById(Long restaurantId) {
-        return restaurantPersistencePort.getRestaurantById(restaurantId);
+        return restaurantPersistencePort.getRestaurantById(restaurantId)
+                .orElseThrow(() -> new RestaurantNotFoundException(ErrorMessages.restaurantNotFound(restaurantId)));
     }
 
     private void validateRestaurant(RestaurantModel restaurantModel) {
@@ -93,11 +93,7 @@ public class RestaurantUseCase implements IRestaurantServicePort {
     }
 
     private void validateUser(Long userId) {
-        UserModel userModel = Optional.ofNullable(userFeignClientPort.getUserById(userId))
-                .orElseThrow(() -> new UserNotFoundException(ErrorMessages.USER_NOT_FOUND));
-
-        if (!ValidationConstants.ROLE_ADMIN.equalsIgnoreCase(userModel.getRoleModel().getName())) {
-            throw new InvalidUserRoleException(ErrorMessages.INVALID_USER_ROLE);
-        }
+        userFeignClientPort.getUserById(userId)
+                .orElseThrow(() -> new UserNotFoundException(ErrorMessages.userNotFound(userId)));
     }
 }

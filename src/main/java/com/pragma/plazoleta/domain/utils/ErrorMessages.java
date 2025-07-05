@@ -13,7 +13,6 @@ public class ErrorMessages {
     public static final String INVALID_PHONE = "Invalid phone number format";
     public static final String INVALID_RESTAURANT_NAME = "Restaurant name cannot consist only of numbers.";
 
-    public static final String USER_NOT_FOUND = "The user does not exist.";
     public static final String INVALID_USER_ROLE = "The user must have the OWNER role to create a restaurant.";
 
     public static final String DISH_NAME_REQUIRED = "The dish name is required.";
@@ -28,7 +27,31 @@ public class ErrorMessages {
     public static final String CATEGORY_NOT_FOUND = "The category does not exist.";
     public static final String DISH_NOT_FOUND = "The dish does not exist.";
 
+    public static final String USER_NOT_OWNER_OF_RESTAURANT = "The authenticated user is not the owner of the restaurant.";
+
+    private static final String ERROR_NOT_FOUND_TEMPLATE = "The %s with ID %d was not found in the system.";
+    public static final String ENTITY_RESTAURANT = "Restaurant";
+    public static final String ENTITY_CATEGORY = "Category";
+    public static final String ENTITY_DISH = "dish";
+    public static final String ENTITY_USER = "user";
+
     private ErrorMessages() {
         throw new UnsupportedOperationException("Utility class");
+    }
+
+    public static String restaurantNotFound(Long id) {
+        return String.format(ERROR_NOT_FOUND_TEMPLATE, ENTITY_RESTAURANT, id);
+    }
+
+    public static String categoryNotFound(Long id) {
+        return String.format(ERROR_NOT_FOUND_TEMPLATE, ENTITY_CATEGORY, id);
+    }
+
+    public static String dishNotFound(Long id) {
+        return String.format(ERROR_NOT_FOUND_TEMPLATE, ENTITY_DISH, id);
+    }
+
+    public static String userNotFound(Long id) {
+        return String.format(ERROR_NOT_FOUND_TEMPLATE, ENTITY_USER, id);
     }
 }

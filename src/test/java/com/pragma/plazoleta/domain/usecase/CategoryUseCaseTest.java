@@ -9,6 +9,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -45,7 +47,7 @@ class CategoryUseCaseTest {
 
     @Test
     void getCategoryById_ExistingCategory_ReturnsCategory() {
-        when(categoryPersistencePort.getCategoryById(DEFAULT_CATEGORY_ID)).thenReturn(categoryModel);
+        when(categoryPersistencePort.getCategoryById(DEFAULT_CATEGORY_ID)).thenReturn(Optional.of(categoryModel));
 
         CategoryModel foundCategory = categoryUseCase.getCategoryById(DEFAULT_CATEGORY_ID);
 
@@ -57,7 +59,7 @@ class CategoryUseCaseTest {
 
     @Test
     void getCategoryById_NonExistingCategory_ReturnsNull() {
-        when(categoryPersistencePort.getCategoryById(DEFAULT_CATEGORY_ID)).thenReturn(null);
+        when(categoryPersistencePort.getCategoryById(DEFAULT_CATEGORY_ID)).thenReturn(Optional.empty());
 
         CategoryModel foundCategory = categoryUseCase.getCategoryById(DEFAULT_CATEGORY_ID);
 

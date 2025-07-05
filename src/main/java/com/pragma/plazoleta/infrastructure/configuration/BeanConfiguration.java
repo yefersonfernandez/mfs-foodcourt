@@ -3,10 +3,7 @@ package com.pragma.plazoleta.infrastructure.configuration;
 import com.pragma.plazoleta.domain.api.ICategoryServicePort;
 import com.pragma.plazoleta.domain.api.IDishServicePort;
 import com.pragma.plazoleta.domain.api.IRestaurantServicePort;
-import com.pragma.plazoleta.domain.spi.ICategoryPersistencePort;
-import com.pragma.plazoleta.domain.spi.IDishPersistencePort;
-import com.pragma.plazoleta.domain.spi.IRestaurantPersistencePort;
-import com.pragma.plazoleta.domain.spi.IUserFeignClientPort;
+import com.pragma.plazoleta.domain.spi.*;
 import com.pragma.plazoleta.domain.usecase.CategoryUseCase;
 import com.pragma.plazoleta.domain.usecase.DishUseCase;
 import com.pragma.plazoleta.domain.usecase.RestaurantUseCase;
@@ -22,6 +19,8 @@ import com.pragma.plazoleta.infrastructure.out.jpa.mapper.IRestaurantEntityMappe
 import com.pragma.plazoleta.infrastructure.out.jpa.repository.ICategoryRepository;
 import com.pragma.plazoleta.infrastructure.out.jpa.repository.IDishRepository;
 import com.pragma.plazoleta.infrastructure.out.jpa.repository.IRestaurantRepository;
+import com.pragma.plazoleta.infrastructure.out.token.TokenAdapter;
+import com.pragma.plazoleta.infrastructure.security.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,6 +40,8 @@ public class BeanConfiguration {
 
     private final IUserFeignClients userFeignClients;
     private final IUserDtoMapper userDtoMapper;
+
+    private JwtUtil jwtUtil;
 
     @Bean
     public IRestaurantPersistencePort restaurantPersistencePort() {
@@ -63,13 +64,18 @@ public class BeanConfiguration {
     }
 
     @Bean
+    public ITokenPort tokenPort (){
+        return  new TokenAdapter(jwtUtil);
+    }
+
+    @Bean
     public IRestaurantServicePort restaurantServicePort() {
         return new RestaurantUseCase(restaurantPersistencePort(), userFeignClientPort());
     }
 
     @Bean
     public IDishServicePort dishServicePort() {
-        return new DishUseCase(dishPersistencePort(), restaurantPersistencePort(), categoryPersistencePort());
+        return new DishUseCase(dishPersistencePort(), restaurantPersistencePort(), categoryPersistencePort(), tokenPort());
     }
 
     @Bean

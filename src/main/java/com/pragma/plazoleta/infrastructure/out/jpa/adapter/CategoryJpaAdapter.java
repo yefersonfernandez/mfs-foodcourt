@@ -7,6 +7,8 @@ import com.pragma.plazoleta.infrastructure.out.jpa.mapper.ICategoryEntityMapper;
 import com.pragma.plazoleta.infrastructure.out.jpa.repository.ICategoryRepository;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Optional;
+
 @RequiredArgsConstructor
 public class CategoryJpaAdapter implements ICategoryPersistencePort {
 
@@ -20,9 +22,8 @@ public class CategoryJpaAdapter implements ICategoryPersistencePort {
     }
 
     @Override
-    public CategoryModel getCategoryById(Long categoryId) {
+    public Optional<CategoryModel> getCategoryById(Long categoryId) {
         return categoryRepository.findById(categoryId)
-                .map(categoryEntityMapper::toCategoryModel)
-                .orElse(null);
+                .map(categoryEntityMapper::toCategoryModel);
     }
 }

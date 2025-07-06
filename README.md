@@ -24,15 +24,7 @@ Microservicio encargado de gestionar los restaurantes que hacen parte de la plaz
 - OpenAPI / Swagger
 - JUnit + Mockito (pruebas unitarias)
 
-## 🧪 Requisitos
-- Documentación OpenAPI
-- Pruebas unitarias por HU
-- Cada HU en rama independiente
 
-## 🔗 Documentación
-- [Documentación OpenAPI](#)
-- [Guía de instalación](#)
-- [Endpoints principales](#)
 
 ## 📌 Estados del pedido
 - `PENDIENTE`
